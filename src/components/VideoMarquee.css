@@ -1,0 +1,44 @@
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+}
+
+.marquee-track {
+    display: flex;
+    gap: 20px;
+    animation: marquee 10s linear infinite;
+    will-change: transform;
+}
+
+.video-card {
+    flex-shrink: 0;
+    width: 270px;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Pause on hover for better UX */
+.marquee-track:hover {
+    animation-play-state: paused;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .video-card {
+        width: 200px;
+    }
+}
+
+@media (max-width: 640px) {
+    .video-card {
+        width: 160px;
+    }
+}

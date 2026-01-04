@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Inter Font - Clean, Light, Premium Typography */
+@layer base {
+  * {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* === LANDING PAGE TYPOGRAPHY === */
+
+  /* Hero headline - 48px / 500 / tight leading / tight tracking */
+  .hero-headline {
+    font-size: 48px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  /* Sub-headline - 18px / 400 / relaxed */
+  .hero-subheadline {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  /* Section headings - 28px / 500 */
+  .section-heading {
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  /* Body text - 16px / 400 / comfortable reading */
+  .body-text {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+
+  /* === DASHBOARD TYPOGRAPHY === */
+
+  /* Metrics numbers - 32px / 500 */
+  .metric-number {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  /* Card titles - 16px / 500 */
+  .card-title {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* Dashboard body - 14px / 400 */
+  .dashboard-body {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  /* Helper text - 12px / 300 */
+  .helper-text {
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* === DEFAULT WEIGHTS === */
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 500;
+  }
+
+  body,
+  p,
+  div,
+  span {
+    font-weight: 400;
+  }
+
+  small,
+  caption {
+    font-weight: 300;
+  }
+
+  /* Disable all bold weights */
+  b,
+  strong {
+    font-weight: 500;
+    /* Maximum weight allowed */
+  }
+
+  /* === SOFT DESIGN (Less Boxy) === */
+
+  /* Softer border radius globally */
+  .rounded-xl {
+    border-radius: 1.5rem;
+    /* 24px - softer than default */
+  }
+
+  .rounded-2xl {
+    border-radius: 2rem;
+    /* 32px - very soft */
+  }
+
+  .rounded-lg {
+    border-radius: 1rem;
+    /* 16px */
+  }
+}
+
+/* === UTILITY CLASSES === */
+@layer utilities {
+  .text-cinematic {
+    letter-spacing: -0.02em;
+  }
+
+  .text-premium {
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .text-light {
+    font-weight: 300;
+  }
+}
