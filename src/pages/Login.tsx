@@ -22,8 +22,30 @@ export default function Login() {
                 password,
             });
 
-            localStorage.setItem("token", response.data.access_token);
-            navigate("/dashboard");
+            const token = response.data.access_token;
+            localStorage.setItem("token", token);
+
+            // Check subscription status via /users/me
+            try {
+                const userResponse = await axios.get(`${API_URL}/users/me`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                const subscriptionStatus = userResponse.data.subscription_status;
+
+                // Redirect based on subscription status
+                if (subscriptionStatus === "active") {
+                    navigate("/dashboard");
+                } else {
+                    navigate("/pricing?message=subscription_required");
+                }
+            } catch (userErr: any) {
+                console.error("Failed to fetch user data:", userErr);
+                // If /users/me fails, redirect to pricing as fallback
+                navigate("/pricing?message=subscription_required");
+            }
         } catch (err: any) {
             setError(err.response?.data?.detail || "Login failed");
         } finally {

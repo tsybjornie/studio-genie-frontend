@@ -50,9 +50,37 @@ export default function Signup() {
                 })
             });
 
-            // Save token and navigate
-            setToken(response.access_token);
-            navigate("/dashboard");
+            // Save token
+            const token = response.access_token;
+            setToken(token);
+
+            // Check subscription status via /users/me
+            try {
+                const userResponse = await fetch("https://studio-genie-backend.onrender.com/users/me", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    const subscriptionStatus = userData.subscription_status;
+
+                    // Redirect based on subscription status
+                    if (subscriptionStatus === "active") {
+                        navigate("/dashboard");
+                    } else {
+                        navigate("/pricing?message=subscription_required");
+                    }
+                } else {
+                    // If /users/me fails, redirect to pricing as fallback
+                    navigate("/pricing?message=subscription_required");
+                }
+            } catch (userErr) {
+                console.error("Failed to fetch user data:", userErr);
+                // If /users/me fails, redirect to pricing as fallback
+                navigate("/pricing?message=subscription_required");
+            }
         } catch (err: any) {
             setError(err.response?.data?.detail || "Failed to create account");
             setLoading(false);
