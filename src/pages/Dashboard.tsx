@@ -102,6 +102,7 @@ export default function Dashboard() {
 
                 // STATE C: Active subscription
                 const data = await res.json();
+                console.log("[DASHBOARD] User data loaded:", data);
                 setDashboard(prev => ({
                     ...prev,
                     credits: data.credits || 0,
@@ -119,8 +120,18 @@ export default function Dashboard() {
             }
         };
 
+        // Check if coming from checkout with refresh flag
+        const params = new URLSearchParams(window.location.search);
+        const shouldRefresh = params.get('refresh');
+
+        if (shouldRefresh) {
+            console.log("[DASHBOARD] Refresh flag detected - forcing immediate data reload");
+            // Remove refresh flag from URL
+            window.history.replaceState({}, '', '/dashboard');
+        }
+
         fetchUserData();
-    }, []);
+    }, []); // Empty dependency - only run once on mount
 
     // Handle Stripe checkout redirects
     useEffect(() => {

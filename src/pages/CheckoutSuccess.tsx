@@ -17,19 +17,21 @@ export default function CheckoutSuccess() {
                 }
 
                 // Fetch latest user data (subscription_status + credits)
-                await axios.get("https://studio-genie-backend.onrender.com/users/me", {
+                const response = await axios.get("https://studio-genie-backend.onrender.com/users/me", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                // Wait 2 seconds to show success message, then redirect
+                console.log("[CHECKOUT SUCCESS] Fresh user data fetched:", response.data);
+
+                // Wait 2 seconds to show success message, then redirect with refresh flag
                 setTimeout(() => {
-                    navigate("/dashboard");
+                    navigate("/dashboard?refresh=true");
                 }, 2000);
             } catch (error) {
                 console.error("Failed to refresh user data:", error);
-                // Redirect anyway - dashboard will handle auth
+                // Redirect anyway with refresh flag - dashboard will handle auth
                 setTimeout(() => {
-                    navigate("/dashboard");
+                    navigate("/dashboard?refresh=true");
                 }, 2000);
             } finally {
                 setLoading(false);
