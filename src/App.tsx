@@ -1,3 +1,4 @@
+// Force deployment trigger - 2026-01-06
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Signup from "./pages/Signup";
