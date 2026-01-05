@@ -65,7 +65,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
     // No active subscription
     if (!hasActiveSubscription) {
-        return <Navigate to="/pricing?message=subscription_required" replace />;
+        return <Navigate to="/app/pricing?message=subscription_required" replace />;
     }
 
     // Has active subscription

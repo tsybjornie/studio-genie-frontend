@@ -39,12 +39,12 @@ export default function Login() {
                 if (subscriptionStatus === "active") {
                     navigate("/dashboard");
                 } else {
-                    navigate("/pricing?message=subscription_required");
+                    navigate("/app/pricing?message=subscription_required");
                 }
             } catch (userErr: any) {
                 console.error("Failed to fetch user data:", userErr);
                 // If /users/me fails, redirect to pricing as fallback
-                navigate("/pricing?message=subscription_required");
+                navigate("/app/pricing?message=subscription_required");
             }
         } catch (err: any) {
             setError(err.response?.data?.detail || "Login failed");

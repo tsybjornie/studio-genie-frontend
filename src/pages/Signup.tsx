@@ -70,16 +70,16 @@ export default function Signup() {
                     if (subscriptionStatus === "active") {
                         navigate("/dashboard");
                     } else {
-                        navigate("/pricing?message=subscription_required");
+                        navigate("/app/pricing?message=subscription_required");
                     }
                 } else {
                     // If /users/me fails, redirect to pricing as fallback
-                    navigate("/pricing?message=subscription_required");
+                    navigate("/app/pricing?message=subscription_required");
                 }
             } catch (userErr) {
                 console.error("Failed to fetch user data:", userErr);
                 // If /users/me fails, redirect to pricing as fallback
-                navigate("/pricing?message=subscription_required");
+                navigate("/app/pricing?message=subscription_required");
             }
         } catch (err: any) {
             setError(err.response?.data?.detail || "Failed to create account");

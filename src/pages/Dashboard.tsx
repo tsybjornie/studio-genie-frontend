@@ -94,7 +94,7 @@ export default function Dashboard() {
                     }
                     if (res.status === 403) {
                         // STATE B: No active subscription
-                        window.location.href = "/pricing?message=subscription_required";
+                        window.location.href = "/app/pricing?message=subscription_required";
                         return;
                     }
                     throw new Error("Failed to fetch user data");
@@ -115,7 +115,7 @@ export default function Dashboard() {
             } catch (err) {
                 console.error("Failed to fetch user data:", err);
                 // On error, redirect to pricing
-                window.location.href = "/pricing";
+                window.location.href = "/app/pricing";
             }
         };
 
