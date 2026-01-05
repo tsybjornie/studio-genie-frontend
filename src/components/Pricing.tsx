@@ -171,6 +171,14 @@ function PricingCard({ name, price, period, badge, features, cta, priceId, ctaLi
             }
         } catch (error: any) {
             console.error("[CHECKOUT] Subscription checkout failed:", error);
+
+            // If fetch failed (network error, CORS, etc), redirect to signup
+            if (error.message === "Failed to fetch" || error.name === "TypeError") {
+                localStorage.removeItem('token'); // Clear potentially invalid token
+                window.location.href = '/signup?redirect=/pricing';
+                return;
+            }
+
             alert(error.message || "Checkout failed. Please try again.");
         } finally {
             setLoading(false);
