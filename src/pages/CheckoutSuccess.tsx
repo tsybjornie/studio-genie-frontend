@@ -1,13 +1,43 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function CheckoutSuccess() {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Optionally clear any checkout-related state
-        // Could also call backend to verify payment status
-    }, []);
+        // Force fresh /users/me fetch to rehydrate auth after Stripe redirect
+        const refreshUserData = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    navigate("/login");
+                    return;
+                }
+
+                // Fetch latest user data (subscription_status + credits)
+                await axios.get("https://studio-genie-backend.onrender.com/users/me", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                // Wait 2 seconds to show success message, then redirect
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 2000);
+            } catch (error) {
+                console.error("Failed to refresh user data:", error);
+                // Redirect anyway - dashboard will handle auth
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 2000);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        refreshUserData();
+    }, [navigate]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-violet-900 via-indigo-900 to-violet-800 flex items-center justify-center px-6">
@@ -22,7 +52,7 @@ export default function CheckoutSuccess() {
                     Payment Successful! 🎉
                 </h1>
                 <p className="text-gray-600 text-lg mb-8">
-                    Your subscription has been activated. Welcome to Studio Genie!
+                    Your payment has been processed. {loading ? "Loading your dashboard..." : "Redirecting..."}
                 </p>
 
                 <div className="space-y-4">
@@ -41,7 +71,7 @@ export default function CheckoutSuccess() {
                 </div>
 
                 <p className="mt-8 text-sm text-gray-500">
-                    You should receive a confirmation email shortly.
+                    Refreshing your account data...
                 </p>
             </div>
         </div>
