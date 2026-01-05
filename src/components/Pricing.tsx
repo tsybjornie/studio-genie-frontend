@@ -129,8 +129,8 @@ function PricingCard({ name, price, period, badge, features, cta, priceId, ctaLi
         const token = localStorage.getItem('token');
 
         if (!token) {
-            // STATE A: Not logged in → redirect to register
-            window.location.href = '/register?redirect=/pricing';
+            // STATE A: Not logged in → redirect to signup
+            window.location.href = '/signup?redirect=/pricing';
             return;
         }
 
