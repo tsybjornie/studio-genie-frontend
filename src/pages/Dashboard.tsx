@@ -112,177 +112,176 @@ export default function Dashboard() {
                 if (savedUsername) {
                     setUserName(savedUsername);
                 }
-            }
             } catch (err) {
-            console.error("Failed to fetch user data:", err);
-            // On error, redirect to pricing
-            window.location.href = "/pricing";
-        }
-    };
-
-    fetchUserData();
-}, []);
-
-// Handle Stripe checkout redirects
-useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const checkoutStatus = params.get('checkout');
-
-    if (checkoutStatus === 'success') {
-        setCurrentView('credits');
-        window.history.replaceState({}, '', '/dashboard');
-        // Refetch credits after successful payment
-        const refetchCredits = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) return;
-            const res = await fetch("https://studio-genie-backend.onrender.com/users/me", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setDashboard(prev => ({ ...prev, credits: data.credits || 0 }));
+                console.error("Failed to fetch user data:", err);
+                // On error, redirect to pricing
+                window.location.href = "/pricing";
             }
         };
-        refetchCredits();
-    } else if (checkoutStatus === 'cancel') {
-        setCurrentView('credits');
-        window.history.replaceState({}, '', '/dashboard');
-    }
-}, []);
 
-useEffect(() => {
-    saveDashboard(dashboard);
-}, [dashboard]);
+        fetchUserData();
+    }, []);
 
-const handleGenerateVideo = async (script: string, language: string) => {
-    setError("");
-    setGenerating(true);
+    // Handle Stripe checkout redirects
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const checkoutStatus = params.get('checkout');
 
-    if (!script.trim()) {
-        setError("Please enter a script");
-        setGenerating(false);
-        return;
-    }
+        if (checkoutStatus === 'success') {
+            setCurrentView('credits');
+            window.history.replaceState({}, '', '/dashboard');
+            // Refetch credits after successful payment
+            const refetchCredits = async () => {
+                const token = localStorage.getItem("token");
+                if (!token) return;
+                const res = await fetch("https://studio-genie-backend.onrender.com/users/me", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setDashboard(prev => ({ ...prev, credits: data.credits || 0 }));
+                }
+            };
+            refetchCredits();
+        } else if (checkoutStatus === 'cancel') {
+            setCurrentView('credits');
+            window.history.replaceState({}, '', '/dashboard');
+        }
+    }, []);
 
-    if (dashboard.credits < 3) {
-        setError("Not enough credits");
-        setGenerating(false);
-        return;
-    }
+    useEffect(() => {
+        saveDashboard(dashboard);
+    }, [dashboard]);
 
-    try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            setError("Not logged in");
+    const handleGenerateVideo = async (script: string, language: string) => {
+        setError("");
+        setGenerating(true);
+
+        if (!script.trim()) {
+            setError("Please enter a script");
             setGenerating(false);
             return;
         }
 
-        const res = await fetch(
-            `https://studio-genie-backend.onrender.com/video/generate?prompt=${encodeURIComponent(script)}&duration_seconds=15`,
-            {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-
-        if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(errorData.detail || "Failed to generate video");
+        if (dashboard.credits < 3) {
+            setError("Not enough credits");
+            setGenerating(false);
+            return;
         }
 
-        const data = await res.json();
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setError("Not logged in");
+                setGenerating(false);
+                return;
+            }
 
-        const newVideo = {
-            id: data.job_id,
-            text: script,
-            language,
-            createdAt: new Date().toISOString(),
-            videoUrl: data.video_url,
-            thumbnailUrl: data.thumbnail_url,
-            duration: data.duration,
-            status: data.status,
-        };
+            const res = await fetch(
+                `https://studio-genie-backend.onrender.com/video/generate?prompt=${encodeURIComponent(script)}&duration_seconds=15`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-        setDashboard({
-            credits: data.credits_left,
-            videos: dashboard.videos + 1,
-            videoList: [newVideo, ...dashboard.videoList],
-        });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.detail || "Failed to generate video");
+            }
 
-        setError("");
-    } catch (err: any) {
-        console.error("Video generation error:", err);
-        setError(err.message || "Failed to generate video");
-    } finally {
-        setGenerating(false);
-    }
-};
+            const data = await res.json();
 
-const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    window.location.href = "/login";
-};
+            const newVideo = {
+                id: data.job_id,
+                text: script,
+                language,
+                createdAt: new Date().toISOString(),
+                videoUrl: data.video_url,
+                thumbnailUrl: data.thumbnail_url,
+                duration: data.duration,
+                status: data.status,
+            };
 
-const handleBuyCredits = () => {
-    setCurrentView('credits');
-    setMobileMenuOpen(false);
-};
+            setDashboard({
+                credits: data.credits_left,
+                videos: dashboard.videos + 1,
+                videoList: [newVideo, ...dashboard.videoList],
+            });
 
-const handleSaveUsername = (newUsername: string) => {
-    setUserName(newUsername);
-    localStorage.setItem("username", newUsername);
-};
+            setError("");
+        } catch (err: any) {
+            console.error("Video generation error:", err);
+            setError(err.message || "Failed to generate video");
+        } finally {
+            setGenerating(false);
+        }
+    };
 
-return (
-    <div className="flex min-h-screen bg-gradient-to-b from-black via-gray-950 to-black">
-        {/* Sidebar */}
-        <Sidebar
-            currentView={currentView}
-            onNavigate={setCurrentView}
-            userEmail={userEmail}
-            userName={userName}
-            userPlan="Pay-As-You-Go"
-            onLogout={handleLogout}
-            mobileMenuOpen={mobileMenuOpen}
-            setMobileMenuOpen={setMobileMenuOpen}
-        />
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        window.location.href = "/login";
+    };
 
-        {/* Main Content */}
-        <main className="flex-1 md:ml-60 p-6 md:p-10">
-            {currentView === 'home' && (
-                <DashboardHome
-                    dashboard={dashboard}
-                    onBuyCredits={handleBuyCredits}
-                    onGenerateVideo={handleGenerateVideo}
-                    generating={generating}
-                    error={error}
-                />
-            )}
+    const handleBuyCredits = () => {
+        setCurrentView('credits');
+        setMobileMenuOpen(false);
+    };
 
-            {currentView === 'projects' && (
-                <DashboardProjects videoList={dashboard.videoList} />
-            )}
+    const handleSaveUsername = (newUsername: string) => {
+        setUserName(newUsername);
+        localStorage.setItem("username", newUsername);
+    };
 
-            {currentView === 'credits' && (
-                <DashboardCredits
-                    credits={dashboard.credits}
-                    onBuyCredits={buyCredits}
-                />
-            )}
+    return (
+        <div className="flex min-h-screen bg-gradient-to-b from-black via-gray-950 to-black">
+            {/* Sidebar */}
+            <Sidebar
+                currentView={currentView}
+                onNavigate={setCurrentView}
+                userEmail={userEmail}
+                userName={userName}
+                userPlan="Pay-As-You-Go"
+                onLogout={handleLogout}
+                mobileMenuOpen={mobileMenuOpen}
+                setMobileMenuOpen={setMobileMenuOpen}
+            />
 
-            {currentView === 'settings' && (
-                <DashboardSettings
-                    userEmail={userEmail}
-                    userName={userName}
-                    onSaveUsername={handleSaveUsername}
-                />
-            )}
-        </main>
-    </div>
-);
+            {/* Main Content */}
+            <main className="flex-1 md:ml-60 p-6 md:p-10">
+                {currentView === 'home' && (
+                    <DashboardHome
+                        dashboard={dashboard}
+                        onBuyCredits={handleBuyCredits}
+                        onGenerateVideo={handleGenerateVideo}
+                        generating={generating}
+                        error={error}
+                    />
+                )}
+
+                {currentView === 'projects' && (
+                    <DashboardProjects videoList={dashboard.videoList} />
+                )}
+
+                {currentView === 'credits' && (
+                    <DashboardCredits
+                        credits={dashboard.credits}
+                        onBuyCredits={buyCredits}
+                    />
+                )}
+
+                {currentView === 'settings' && (
+                    <DashboardSettings
+                        userEmail={userEmail}
+                        userName={userName}
+                        onSaveUsername={handleSaveUsername}
+                    />
+                )}
+            </main>
+        </div>
+    );
 }
