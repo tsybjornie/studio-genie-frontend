@@ -15,7 +15,7 @@ export default function Landing() {
             <VideoMarquee />
             <HowItWorks />
             <Testimonials />
-            <Pricing />
+            <Pricing isLandingPage={true} />
             <FAQandContact />
             <Footer />
         </div>

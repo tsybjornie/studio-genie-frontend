@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-export default function Pricing() {
+interface PricingProps {
+    isLandingPage?: boolean;  // If true, redirect to login instead of Stripe
+}
+
+export default function Pricing({ isLandingPage = false }: PricingProps) {
     return (
         <section id="pricing" className="py-24 bg-white">
             <div className="max-w-7xl mx-auto px-6">
@@ -13,6 +17,7 @@ export default function Pricing() {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <PricingCard
+                        isLandingPage={isLandingPage}
                         name="Starter"
                         price="$39"
                         period="/mo"
@@ -32,6 +37,7 @@ export default function Pricing() {
                     />
 
                     <PricingCard
+                        isLandingPage={isLandingPage}
                         name="Creator"
                         price="$79"
                         period="/mo"
@@ -51,6 +57,7 @@ export default function Pricing() {
                     />
 
                     <PricingCard
+                        isLandingPage={isLandingPage}
                         name="Pro"
                         price="$149"
                         period="/mo"
@@ -72,6 +79,7 @@ export default function Pricing() {
                     />
 
                     <PricingCard
+                        isLandingPage={isLandingPage}
                         name="Custom"
                         price="Let's Talk"
                         features={[
@@ -97,6 +105,7 @@ interface Feature {
 }
 
 interface PricingCardProps {
+    isLandingPage?: boolean;
     name: string;
     price: string;
     period?: string;
@@ -108,7 +117,7 @@ interface PricingCardProps {
     highlighted?: boolean;
 }
 
-function PricingCard({ name, price, period, badge, features, cta, priceId, ctaLink, highlighted }: PricingCardProps) {
+function PricingCard({ isLandingPage, name, price, period, badge, features, cta, priceId, ctaLink, highlighted }: PricingCardProps) {
     const [loading, setLoading] = useState(false);
 
     const handleCheckout = async () => {
@@ -118,6 +127,11 @@ function PricingCard({ name, price, period, badge, features, cta, priceId, ctaLi
             return;
         }
 
+        // LANDING PAGE: Always redirect to login (never call Stripe)
+        if (isLandingPage) {
+            window.location.href = '/login';
+            return;
+        }
 
         // Subscription plans - CANONICAL v1.0 + AUTH REQUIRED
         if (!priceId) {
