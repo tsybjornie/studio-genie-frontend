@@ -23,6 +23,10 @@ export default function Login() {
             });
 
             const token = response.data.access_token;
+
+            // Clear ALL storage before setting new token to prevent old user persistence
+            localStorage.clear();
+            sessionStorage.clear();
             localStorage.setItem("token", token);
 
             // Check subscription status via /users/me

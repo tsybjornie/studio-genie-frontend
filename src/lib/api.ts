@@ -7,6 +7,9 @@ export function getToken() {
 }
 
 export function setToken(token: string) {
+    // Clear ALL storage before setting new token to prevent old user persistence
+    localStorage.clear();
+    sessionStorage.clear();
     localStorage.setItem(TOKEN_KEY, token);
 }
 
