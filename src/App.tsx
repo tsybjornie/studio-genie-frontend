@@ -1,6 +1,6 @@
 // Studio Genie Frontend
 // Force deployment trigger - 2026-01-06 17:54 - Storage clearing + identity fixes
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
