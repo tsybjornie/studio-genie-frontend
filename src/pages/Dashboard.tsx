@@ -260,6 +260,22 @@ export default function Dashboard() {
         localStorage.setItem("username", newUsername);
     };
 
+    // Block render until user data is loaded (fixes TypeScript errors)
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+                <div className="text-white text-xl">Loading...</div>
+            </div>
+        );
+    }
+
+    // Block render if email is null (ensures type safety)
+    if (!userEmail) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return null;
+    }
+
     return (
         <div className="flex min-h-screen bg-gradient-to-b from-black via-gray-950 to-black">
             {/* Sidebar */}
