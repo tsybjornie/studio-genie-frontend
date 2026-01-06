@@ -62,8 +62,9 @@ export default function Dashboard() {
     const [error, setError] = useState("");
     const [generating, setGenerating] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [userEmail, setUserEmail] = useState("user@example.com");
+    const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userName, setUserName] = useState("");
+    const [loading, setLoading] = useState(true);
 
     // Fetch user data and credits + SUBSCRIPTION CHECK
     useEffect(() => {
@@ -97,26 +98,37 @@ export default function Dashboard() {
                         window.location.href = "/app/pricing?message=subscription_required";
                         return;
                     }
+                    if (res.status === 404) {
+                        // User not found - logout
+                        localStorage.removeItem("token");
+                        window.location.href = "/login";
+                        return;
+                    }
                     throw new Error("Failed to fetch user data");
                 }
 
                 // STATE C: Active subscription
                 const data = await res.json();
                 console.log("[DASHBOARD] User data loaded:", data);
+
+                // Set state with EXACT values from backend (NO fallbacks)
                 setDashboard(prev => ({
                     ...prev,
                     credits: data.credits || 0,
                 }));
-                setUserEmail(data.email || "user@example.com");
-                // Try to get username from localStorage or backend if available
+                setUserEmail(data.email);  // Use exact email, NULL allowed
+                setLoading(false);
+
+                // Try to get username from localStorage
                 const savedUsername = localStorage.getItem("username");
                 if (savedUsername) {
                     setUserName(savedUsername);
                 }
             } catch (err) {
                 console.error("Failed to fetch user data:", err);
-                // On error, redirect to pricing
-                window.location.href = "/app/pricing";
+                // On error, clear token and redirect to login
+                localStorage.removeItem("token");
+                window.location.href = "/login";
             }
         };
 
